@@ -1,0 +1,359 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --sx: 0px;
+  --sy: 0px;
+  --rx: 0deg;
+  --ry: 0deg;
+  --fill-percent: 0%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 1s ease;
+  overflow: hidden;
+  perspective: 1000px;
+}
+
+body.impact {
+  animation: screen-shake 0.1s ease-in-out;
+}
+
+@keyframes screen-shake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(2px, -2px); }
+  50% { transform: translate(-2px, 2px); }
+  75% { transform: translate(2px, 2px); }
+}
+
+/* Overlays */
+#overlay-frost, #overlay-heat {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+
+#overlay-frost {
+  background: radial-gradient(circle at center, transparent 30%, rgba(255, 255, 255, 0.4) 100%);
+  box-shadow: inset 0 0 100px rgba(179, 229, 252, 0.5);
+  backdrop-filter: blur(0px);
+}
+
+body.frozen #overlay-frost {
+  opacity: 1;
+  backdrop-filter: blur(2px);
+}
+
+#overlay-heat {
+  background: radial-gradient(circle at center, transparent 50%, rgba(255, 68, 0, 0.2) 100%);
+}
+
+body.flaming #overlay-heat {
+  opacity: 1;
+  animation: heat-shimmer 2s infinite alternate;
+}
+
+@keyframes heat-shimmer {
+  from { filter: contrast(1.1) brightness(1.1) hue-rotate(0deg); }
+  to { filter: contrast(1.2) brightness(1.2) hue-rotate(10deg); }
+}
+
+.container {
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 0 20px;
+}
+
+h1 {
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  margin-top: 15px;
+  margin-bottom: 25px;
+  font-size: clamp(1.5rem, 8vw, 2.5rem);
+}
+
+/* Heart Container & Aura */
+.heart-container {
+  margin: 0 auto 20px;
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  filter: drop-shadow(var(--sx) var(--sy) 15px rgba(0,0,0,0.3));
+  transition: filter 0.1s ease, transform 0.1s ease;
+  transform-style: preserve-3d;
+}
+
+#scan-line {
+  position: absolute;
+  width: 120%;
+  height: 2px;
+  background: rgba(0, 242, 255, 0.8);
+  box-shadow: 0 0 10px #00f2ff;
+  top: 0;
+  left: -10%;
+  z-index: 15;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#scan-line.active {
+  opacity: 1;
+  animation: scan-move 2s ease-in-out infinite;
+}
+
+@keyframes scan-move {
+  0%, 100% { top: 0%; }
+  50% { top: 100%; }
+}
+
+.aura {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 45, 85, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+  opacity: 0;
+  animation: aura-pulse 1.5s ease-in-out infinite;
+}
+
+body.high .aura, body.flaming .aura { opacity: 1; }
+body.flaming .aura { background: radial-gradient(circle, rgba(255, 157, 0, 0.3) 0%, transparent 70%); }
+
+@keyframes aura-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.2; }
+  50% { transform: scale(1.2); opacity: 0.4; }
+}
+
+/* Split Heart Halves */
+.heart-half {
+  width: 150px;
+  height: 150px;
+  position: absolute;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), fill 0.5s ease, filter 0.5s ease;
+  animation: beat 1.5s ease-in-out infinite;
+  fill: #d75a4a;
+  transform-style: preserve-3d;
+}
+
+.heart-half-left {
+  clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+}
+
+.heart-half-right {
+  clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+}
+
+/* Result States */
+body.low .heart-half-left { transform: translate(-15px, 5px) rotate(-10deg); fill: #7f8c8d; }
+body.low .heart-half-right { transform: translate(15px, 5px) rotate(10deg); fill: #7f8c8d; }
+
+body.frozen {
+  background: linear-gradient(135deg, #2bc0e4 0%, #eaecc6 100%);
+}
+body.frozen .heart-half-left { transform: translate(-25px, 10px) rotate(-20deg); fill: #b3e5fc; filter: drop-shadow(0 0 10px #2bc0e4); }
+body.frozen .heart-half-right { transform: translate(25px, 10px) rotate(20deg); fill: #b3e5fc; filter: drop-shadow(0 0 10px #2bc0e4); }
+
+body.high {
+  background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
+}
+body.high .heart-half { fill: #ff2d55; }
+
+body.flaming {
+  background: radial-gradient(circle, #ff5f6d, #ffc371);
+}
+body.flaming .heart-half { fill: #ff9d00; filter: drop-shadow(0 0 15px #ff5f6d); }
+
+/* Crack lines */
+.crack-line {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+body.low .crack-line, body.frozen .crack-line { opacity: 1; }
+
+body.low .heart-half .crack-line { stroke: #29323c; animation: crack 2s ease-in-out infinite; }
+body.frozen .heart-half .crack-line { stroke: #eaecc6; animation: crack 2s ease-in-out infinite; }
+
+@keyframes beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Particles & Effects */
+.particle, .rain-drop, .snow-particle, .confetti, .floating-el { position: absolute; pointer-events: none; }
+
+.particle {
+  width: 8px; height: 8px; border-radius: 50%; z-index: 10;
+  left: 50%; top: 50%; animation: explode 0.8s ease-out forwards;
+}
+
+.rain-drop {
+  width: 4px; height: 12px; background: rgba(100, 149, 237, 0.7);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  z-index: 5; top: -20px; animation: rain-fall 2s linear forwards;
+}
+
+.snow-particle {
+  width: 6px; height: 6px; background: white; border-radius: 50%;
+  filter: blur(1px); z-index: 5; top: -20px; animation: snow-fall 3s linear forwards;
+}
+
+.confetti {
+  width: 10px; height: 10px; z-index: 10; left: 50%; top: 50%;
+  animation: confetti-pop 2.5s ease-out forwards;
+}
+
+/* Floating Elements */
+.floating-el {
+  z-index: 2;
+  font-size: 20px;
+  animation: float-up 4s linear forwards;
+}
+
+@keyframes float-up {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(360deg); opacity: 0; }
+}
+
+@keyframes rain-fall { to { transform: translateY(600px); opacity: 0; } }
+@keyframes snow-fall {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(15px, 75px); }
+  50% { transform: translate(-15px, 150px); }
+  75% { transform: translate(15px, 225px); }
+  100% { transform: translate(0, 300px); opacity: 0; }
+}
+@keyframes confetti-pop {
+  0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0) rotate(720deg); opacity: 0; }
+}
+@keyframes explode {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; }
+}
+
+@keyframes crack {
+  0%, 100% { opacity: 1; transform: translateX(0); }
+  50% { opacity: 0.8; transform: translateX(1px); }
+}
+
+/* EKG Monitor */
+#ekg-container {
+  width: 200px;
+  height: 40px;
+  margin: 30px auto;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+#ekg-container.active {
+  opacity: 1;
+}
+
+#ekg-line {
+  stroke: #00f2ff;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 5px #00f2ff);
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: ekg-draw 1.5s linear infinite;
+}
+
+@keyframes ekg-draw {
+  to { stroke-dashoffset: -100; }
+}
+
+/* Button & Liquid Fill */
+#result {
+  font-size: 1.5rem;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  color: #fff;
+  transition: transform 0.3s ease;
+  word-wrap: break-word;
+}
+
+button {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #fff;
+  color: #333;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  margin-top: 30px;
+}
+
+button .liquid-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--fill-percent);
+  background: rgba(255, 45, 85, 0.3);
+  z-index: -1;
+  transition: width 0.1s linear;
+}
+
+button:hover {
+  background: #f13064;
+  color: #fff;
+  box-shadow: 0 5px 20px rgba(241,48,100,0.3);
+}
+
+button:active { transform: scale(0.98); }
+
+/* Mobile Optimizations */
+@media (max-width: 480px) {
+  h1 {
+    margin-top: 10px;
+  }
+  .heart-container {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 10px;
+  }
+  .heart-half {
+    width: 120px;
+    height: 120px;
+  }
+  #result {
+    font-size: 1.1rem;
+    margin-top: 20px;
+  }
+  #ekg-container {
+    width: 160px;
+    height: 30px;
+    margin: 15px auto;
+  }
+  button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    margin-top: 25px;
+  }
+}

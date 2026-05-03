@@ -1,0 +1,6 @@
+node_modules/
+www/
+.idea/
+.vscode/
+package-lock.json
+*.log

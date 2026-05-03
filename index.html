@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <title>Love Me or Love Me Not</title>
+  <link rel='stylesheet' href='style.css'>
+  <link rel='manifest' href='manifest.json'>
+  <meta name='theme-color' content='#ff9a9e'>
+</head>
+<body>
+  <div id='overlay-frost'></div>
+  <div id='overlay-heat'></div>
+  <div class='container'>
+    <h1>Love Me or Love Me Not</h1>
+    <div class='heart-container' id='parallax-heart'>
+      <div id='scan-line'></div>
+      <div id='bg-elements-container'></div>
+      <div class='aura'></div>
+      <!-- Split heart halves -->
+      <svg class='heart-half heart-half-left' viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M24.85 10.126c2.018-4.783 6.628-8.125 11.99-8.125 7.223 0 12.425 6.179 13.079 13.543 0 0 .353 1.828-.424 5.119-1.058 4.482-3.545 8.464-6.898 11.503L24.85 48 7.402 32.165c-3.353-3.038-5.84-7.021-6.898-11.503-.777-3.291-.424-5.119-.424-5.119C.734 8.179 5.936 2 13.159 2c5.363 0 9.673 3.343 11.691 8.126z'/>
+        <path class='crack-line' d='M25 10 L22 15 L28 22 L22 30 L28 38 L25 48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none' />
+      </svg>
+      <svg class='heart-half heart-half-right' viewBox='0 0 50 50' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M24.85 10.126c2.018-4.783 6.628-8.125 11.99-8.125 7.223 0 12.425 6.179 13.079 13.543 0 0 .353 1.828-.424 5.119-1.058 4.482-3.545 8.464-6.898 11.503L24.85 48 7.402 32.165c-3.353-3.038-5.84-7.021-6.898-11.503-.777-3.291-.424-5.119-.424-5.119C.734 8.179 5.936 2 13.159 2c5.363 0 9.673 3.343 11.691 8.126z'/>
+        <path class='crack-line' d='M25 10 L22 15 L28 22 L22 30 L28 38 L25 48' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none' />
+      </svg>
+    </div>
+    <p id='result'>Click and hold the button to check your heart rate</p>
+    <div id='ekg-container'>
+      <svg viewBox='0 0 100 40' preserveAspectRatio='none'>
+        <path id='ekg-line' d='M0,20 L10,20 L12,20 L14,5 L16,35 L18,20 L20,20 L100,20' fill='none' stroke='#00ff00' stroke-width='1'/>
+      </svg>
+    </div>
+    <button id='checkBtn'><span class='liquid-fill'></span>Hold to Check Heartbeat</button>
+  </div>
+  <script src='script.js'></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registered'))
+          .catch(err => console.log('Service Worker registration failed', err));
+      });
+    }
+  </script>
+</body>
+</html>
