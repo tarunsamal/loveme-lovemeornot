@@ -283,10 +283,9 @@ function cancelMeasuring() {
   }
 }
 
-// Mouse Tracking for 3D Tilt & Shadows
-document.addEventListener('mousemove', (e) => {
-  const x = (e.clientX - window.innerWidth / 2) / 20;
-  const y = (e.clientY - window.innerHeight / 2) / 20;
+function updateTilt(clientX, clientY) {
+  const x = (clientX - window.innerWidth / 2) / 20;
+  const y = (clientY - window.innerHeight / 2) / 20;
   
   // Dynamic Shadows
   document.documentElement.style.setProperty('--sx', `${-x}px`);
@@ -295,7 +294,17 @@ document.addEventListener('mousemove', (e) => {
   // 3D Parallax Tilt
   document.documentElement.style.setProperty('--rx', `${-y}deg`);
   document.documentElement.style.setProperty('--ry', `${x}deg`);
-});
+}
+
+// Mouse Tracking for 3D Tilt & Shadows
+document.addEventListener('mousemove', (e) => updateTilt(e.clientX, e.clientY));
+
+// Touch Tracking for 3D Tilt on Mobile
+document.addEventListener('touchmove', (e) => {
+  if (e.touches.length > 0) {
+    updateTilt(e.touches[0].clientX, e.touches[0].clientY);
+  }
+}, { passive: true });
 
 // Event Listeners
 btn.addEventListener('mousedown', startMeasuring);
